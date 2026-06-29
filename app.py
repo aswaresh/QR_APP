@@ -33,14 +33,14 @@ def create_qr_with_text(data, width, height, filepath):
     img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
     img = img.resize((width, height))
 
-    text_height = 30
+    text_height = 50
     final_img = Image.new("RGB", (width, height + text_height), "white")
     final_img.paste(img, (0, 0))
 
     draw = ImageDraw.Draw(final_img)
 
     try:
-        font = ImageFont.truetype("arial.ttf", 18)
+        font = ImageFont.truetype("arial.ttf", 20)
     except:
         font = ImageFont.load_default()
 
