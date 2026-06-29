@@ -52,15 +52,14 @@ def create_qr_with_text(data, width, height, filepath):
 
         text_width = draw.textlength(data, font=font)
         
-        if text_width <= width * 0.90:
+        if text_width <= width - 40:
             break
 
-        font_size -= 3
+        font_size -= 4
 
     # ✅ CENTER ALIGN
     text_x = (width - text_width) // 2
-    text_y = height + (text_height // 3)
-
+    text_y = height + int((text_height - font_size) / 2)
     draw.text((text_x, text_y), data, fill="black", font=font)
 
     final_img.save(filepath)
@@ -148,11 +147,11 @@ def download():
 
     os.makedirs(OUTPUT_FOLDER_LOCAL, exist_ok=True)
 
-    image_files = [
+    image_files = sorted([
         os.path.join(IMAGE_FOLDER, f)
         for f in os.listdir(IMAGE_FOLDER)
         if f.endswith(".png")
-    ]
+    ])
 
     # ZIP
     if output_type == "zip":
