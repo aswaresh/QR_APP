@@ -198,9 +198,15 @@ def download():
 
     return "Invalid option"
 
+from flask import send_from_directory
+
 @app.route("/download-template")
 def download_template():
-    return send_file("template.xlsx", as_attachment=True)
+    return send_from_directory(
+        directory=".",
+        path="template.xlsx",
+        as_attachment=True
+    )
 
 
 # -----------------------------
