@@ -40,7 +40,7 @@ def create_qr_with_text(data, width, height, filepath):
     draw = ImageDraw.Draw(final_img)
 
     try:
-        font = ImageFont.truetype("arial.ttf", 20)
+        font = ImageFont.truetype("arial.ttf", 50)
     except:
         font = ImageFont.load_default()
 
