@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import qrcode
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, send_from_directory
 from PIL import Image, ImageDraw, ImageFont
 import zipfile
 from reportlab.pdfgen import canvas
@@ -10,7 +10,7 @@ from reportlab.lib.pagesizes import A4
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
-OUTPUT_FOLDER = "static/generated"   # ✅ for preview
+OUTPUT_FOLDER = "static/generated"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -22,7 +22,7 @@ def mm_to_px(mm):
     return int((mm * 300) / 25.4)
 
 # -----------------------------
-# QR + label
+# QR + Label (AUTO FIT TEXT ✅)
 # -----------------------------
 def create_qr_with_text(data, width, height, filepath):
 
@@ -33,23 +33,35 @@ def create_qr_with_text(data, width, height, filepath):
     img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
     img = img.resize((width, height))
 
-    text_height = int(height * 0.75)
+    # ✅ LABEL HEIGHT (same width maintained)
+    text_height = int(height * 0.25)
+
     final_img = Image.new("RGB", (width, height + text_height), "white")
     final_img.paste(img, (0, 0))
 
     draw = ImageDraw.Draw(final_img)
-    font_size = int(width * 0.50)
 
-    try:
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except:
-        font = ImageFont.load_default()
+    # ✅ AUTO FIT FONT (IMPORTANT)
+    font_size = int(width * 0.30)
 
-    text_width = draw.textlength(data, font=font)
+    while font_size > 10:
+        try:
+            font = ImageFont.truetype("arial.ttf", font_size)
+        except:
+            font = ImageFont.load_default()
+
+        text_width = draw.textlength(data, font=font)
+
+        if text_width <= width - 20:
+            break
+
+        font_size -= 2
+
+    # ✅ CENTER ALIGN
     text_x = (width - text_width) // 2
+    text_y = height + (text_height // 3)
 
-    text_y = height + int(text_height * 0.15)
-    draw.text((text_x, height + int(text_height * 0.2)), data, fill="black", font=font)
+    draw.text((text_x, text_y), data, fill="black", font=font)
 
     final_img.save(filepath)
 
@@ -78,12 +90,12 @@ def generate():
 
     # ✅ Validation
     if width < 100 or height < 100:
-        return render_template("upload.html", error="⚠ Size too small (Minimum 20mm)")
+        return render_template("upload.html", error="⚠ Size too small (Min 20mm)")
 
     if width > 2000 or height > 2000:
-        return render_template("upload.html", error="⚠ Size too large (Maximum 200mm)")
+        return render_template("upload.html", error="⚠ Size too large (Max 200mm)")
 
-    # ✅ CLEAR OLD FILES
+    # ✅ Clear old images
     for f in os.listdir(OUTPUT_FOLDER):
         os.remove(os.path.join(OUTPUT_FOLDER, f))
 
@@ -92,7 +104,7 @@ def generate():
         file = request.files.get("file")
 
         if not file or file.filename == "":
-            return render_template("upload.html", error="⚠ Please upload Excel file")
+            return render_template("upload.html", error="⚠ Upload Excel file")
 
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filepath)
@@ -108,7 +120,7 @@ def generate():
 
         ids = [manual_id]
 
-    # ---------------- Generate Images ----------------
+    # ---------------- Generate ----------------
     image_files = []
 
     for eid in ids:
@@ -130,7 +142,6 @@ def generate():
 def download():
 
     output_type = request.form["output_type"]
-    layout = request.form["layout"]
 
     IMAGE_FOLDER = "static/generated"
     OUTPUT_FOLDER_LOCAL = "output"
@@ -143,7 +154,7 @@ def download():
         if f.endswith(".png")
     ]
 
-    # ---------------- ZIP ----------------
+    # ZIP
     if output_type == "zip":
         zip_path = os.path.join(OUTPUT_FOLDER_LOCAL, "qr_codes.zip")
 
@@ -153,7 +164,7 @@ def download():
 
         return send_file(zip_path, as_attachment=True)
 
-    # ---------------- PDF ----------------
+    # PDF
     elif output_type == "pdf":
 
         pdf_path = os.path.join(OUTPUT_FOLDER_LOCAL, "qr_codes.pdf")
@@ -162,9 +173,8 @@ def download():
         page_width, page_height = A4
 
         margin = 20
-        text_height = 30
-
-        qr_size = 300   # display size in PDF
+        qr_size = 300
+        text_height = int(qr_size * 0.25)
 
         cell_width = qr_size + margin
         cell_height = qr_size + text_height + margin
@@ -195,21 +205,16 @@ def download():
                 c.showPage()
 
         c.save()
-
         return send_file(pdf_path, as_attachment=True)
 
     return "Invalid option"
 
-from flask import send_from_directory
-
+# -----------------------------
+# Template download
+# -----------------------------
 @app.route("/download-template")
 def download_template():
-    return send_from_directory(
-        directory=".",
-        path="template.xlsx",
-        as_attachment=True
-    )
-
+    return send_from_directory(".", "template.xlsx", as_attachment=True)
 
 # -----------------------------
 # Run
