@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Preview</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f2f5f9;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 { margin-bottom: 20px; }
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        img {
+            width: 150px;
+        }
+
+        .button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border: none;
+            background: #4facfe;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>QR Preview</h2>
+
+<div class="grid">
+{% for img in images[:10] %}
+    <div class="card">
+        <img src="{{ url_for('static', filename='generated/' + img) }}">
+        <p>{{ img.split('.')[0] }}</p>
+    </div>
+{% endfor %}
+</div>
+
+{% if images|length > 10 %}
+<p>Showing first 10 QRs only...</p>
+{% endif %}
+
+<form action="/download" method="POST">
+    <input type="hidden" name="output_type" value="{{ output_type }}">
+    <input type="hidden" name="layout" value="{{ layout }}">
+
+    <button class="button">Download</button>
+</form>
+
+</body>
+</html>

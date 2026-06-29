@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Generator</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .error {
+            background-color: #ffe5e5;
+            color: #d10000;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="file"],
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .radio-group label {
+            font-weight: 500;
+        }
+
+        .radio-group input {
+            margin-right: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .small-note {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .template-btn {
+            font-size: 12px;
+            color: #4facfe;
+            text-decoration: none;
+            border: 1px solid #4facfe;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .template-btn:hover {
+            background: #4facfe;
+            color: white;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #fff;
+            opacity: 0.7;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>QR Code Generator</h2>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form action="/generate" method="POST" enctype="multipart/form-data">
+
+        <!-- Mode Selection -->
+        <label>Mode</label>
+        <div class="radio-group">
+            <label><input type="radio" name="mode" value="excel" checked onclick="toggleMode()"> Excel Upload</label>
+            <label><input type="radio" name="mode" value="manual" onclick="toggleMode()"> Manual Entry</label>
+        </div>
+
+        <!-- Excel Upload -->
+        <div id="excel-section">
+
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+
+                <label style="margin:0;">Upload Excel</label>
+                
+                <a href="/download-template" class="template-btn">
+                    ⬇ Template
+                </a>
+            </div>
+
+    <input type="file" name="file" class="form-input">
+
+</div>
+
+        <!-- Manual Entry -->
+        <div id="manual-section" style="display:none;">
+            <label>Equipment ID</label>
+            <input 
+                type="text" 
+                name="manual_id" 
+                placeholder="Enter Equipment ID (e.g., LC-001)"
+                class="input-field"
+            >
+        </div>
+
+        <label>Output Type</label>
+        <div class="radio-group">
+            <label><input type="radio" name="output_type" value="zip" checked> ZIP</label>
+            <label><input type="radio" name="output_type" value="pdf"> PDF</label>
+        </div>
+
+        <label>Layout</label>
+        <div class="radio-group">
+            <label><input type="radio" name="layout" value="single" checked> Single</label>
+            <label><input type="radio" name="layout" value="multi"> Multi</label>
+        </div>
+
+        <label>QR Width (mm)</label>
+        <input type="number" name="width" value="50">
+
+        <label>QR Height (mm)</label>
+        <input type="number" name="height" value="50">
+
+        <button type="submit" class="button">Generate QR Codes</button>
+
+    </form>
+
+<!-- JS Toggle -->
+<script>
+function toggleMode() {
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+
+    if (mode === "excel") {
+        document.getElementById("excel-section").style.display = "block";
+        document.getElementById("manual-section").style.display = "none";
+    } else {
+        document.getElementById("excel-section").style.display = "none";
+        document.getElementById("manual-section").style.display = "block";
+    }
+}
+</script>
+
+    <div class="small-note">
+        Recommended size: 30mm – 80mm
+    </div>
+
+</div>
+<div class="footer">
+    Developed by aswaresh.r@gmail.com
+</div>
+</body>
+</html>
