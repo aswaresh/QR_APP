@@ -42,20 +42,20 @@ def create_qr_with_text(data, width, height, filepath):
     draw = ImageDraw.Draw(final_img)
 
     # ✅ AUTO FIT FONT (IMPORTANT)
-    font_size = int(width * 0.30)
+    font_size = int(width * 0.40)
 
     while font_size > 10:
         try:
-            font = ImageFont.truetype("arial.ttf", font_size)
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
         except:
             font = ImageFont.load_default()
 
         text_width = draw.textlength(data, font=font)
 
-        if text_width <= width - 20:
+        if text_width <= width - 30:
             break
 
-        font_size -= 2
+        font_size -= 4
 
     # ✅ CENTER ALIGN
     text_x = (width - text_width) // 2
