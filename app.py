@@ -51,11 +51,11 @@ def create_qr_with_text(data, width, height, filepath):
             font = ImageFont.load_default()
 
         text_width = draw.textlength(data, font=font)
-
-        if text_width <= width - 30:
+        
+        if text_width <= width * 0.90:
             break
 
-        font_size -= 4
+        font_size -= 3
 
     # ✅ CENTER ALIGN
     text_x = (width - text_width) // 2
@@ -110,7 +110,7 @@ def generate():
         file.save(filepath)
 
         df = pd.read_excel(filepath)
-        ids = df.iloc[:, 0].dropna().astype(str).unique()
+        ids = df.iloc[:, 0].dropna().astype(str).drop_duplicates()
 
     else:
         manual_id = request.form.get("manual_id", "").strip()
