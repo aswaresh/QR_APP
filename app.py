@@ -33,12 +33,12 @@ def create_qr_with_text(data, width, height, filepath):
     img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
     img = img.resize((width, height))
 
-    text_height = int(height * 0.25)
+    text_height = int(height * 0.75)
     final_img = Image.new("RGB", (width, height + text_height), "white")
     final_img.paste(img, (0, 0))
 
     draw = ImageDraw.Draw(final_img)
-    font_size = int(width * 0.15)
+    font_size = int(width * 0.50)
 
     try:
         font = ImageFont.truetype("arial.ttf", font_size)
@@ -48,6 +48,7 @@ def create_qr_with_text(data, width, height, filepath):
     text_width = draw.textlength(data, font=font)
     text_x = (width - text_width) // 2
 
+    text_y = height + int(text_height * 0.15)
     draw.text((text_x, height + int(text_height * 0.2)), data, fill="black", font=font)
 
     final_img.save(filepath)
