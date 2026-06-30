@@ -172,7 +172,7 @@ def download():
         page_width, page_height = A4
 
         margin = 20
-        qr_size = 300
+        qr_size = Image.open(image_files[0]).size[0]
         text_height = int(qr_size * 0.25)
 
         cell_width = qr_size + margin
