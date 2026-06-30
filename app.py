@@ -178,8 +178,15 @@ def download():
         cell_width = qr_size + margin
         cell_height = qr_size + text_height + margin
 
-        cols = int(page_width // cell_width)
-        rows = int(page_height // cell_height)
+        cols = max(1, int(page_width // cell_width))
+        rows = max(1, int(page_height // cell_height))
+        if cols == 1 and rows == 1:
+            # force one QR per page
+            for img in image_files:
+                c.drawImage(img, 50, 500,
+                            width=qr_size,
+                            height=qr_size + text_height)
+                c.showPage()
 
         x_start = (page_width - (cols * cell_width)) / 2
         y_start = page_height - margin
