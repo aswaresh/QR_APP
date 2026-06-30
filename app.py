@@ -173,13 +173,24 @@ def download():
 
         margin = 20
 
+        # ✅ Ensure at least one image exists
+        if not image_files:
+            return "No QR images found"
+
+        # ✅ Get real size from image (px → convert to points)
+        img_sample = Image.open(image_files[0])
+        img_px = img_sample.size[0]
+        qr_size = img_px * 72 / 300   # ✅ CRITICAL FIX
+
+        text_height = qr_size * 0.25
+
         cell_width = qr_size + margin
         cell_height = qr_size + text_height + margin
 
         cols = max(1, int(page_width // cell_width))
         rows = max(1, int(page_height // cell_height))
 
-        # ✅ Center grid inside page
+        # ✅ center grid
         total_width = cols * cell_width
         total_height = rows * cell_height
 
@@ -208,11 +219,10 @@ def download():
 
             if count % (cols * rows) == 0:
                 c.showPage()
+
         c.save()
         return send_file(pdf_path, as_attachment=True)
-
-    return "Invalid option"
-
+        
 # -----------------------------
 # Template download
 # -----------------------------
