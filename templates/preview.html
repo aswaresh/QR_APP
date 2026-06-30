@@ -48,8 +48,8 @@
 
 <div class="grid">
 {% for img in images[:10] %}
-    <div class="card">
-        <img src="{{ url_for('static', filename='generated/' + img) }}">
+    <div class="card">        
+        <img src="{{ url_for('static', filename='generated/' + img) }}" style="width:{{ 150 }}px;">
         <p>{{ img.split('.')[0] }}</p>
     </div>
 {% endfor %}
