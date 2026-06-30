@@ -171,44 +171,43 @@ def download():
 
         page_width, page_height = A4
 
-        margin = 20
-        qr_size = Image.open(image_files[0]).size[0]
-        text_height = int(qr_size * 0.25)
+       margin = 20
 
-        cell_width = qr_size + margin
-        cell_height = qr_size + text_height + margin
+       cell_width = qr_size + margin
+       cell_height = qr_size + text_height + margin
 
-        cols = max(1, int(page_width // cell_width))
-        rows = max(1, int(page_height // cell_height))
-        if cols == 1 and rows == 1:
-            # force one QR per page
-            for img in image_files:
-                c.drawImage(img, 50, 500,
-                            width=qr_size,
-                            height=qr_size + text_height)
-                c.showPage()
+       cols = max(1, int(page_width // cell_width))
+       rows = max(1, int(page_height // cell_height))
 
-        x_start = (page_width - (cols * cell_width)) / 2
-        y_start = page_height - margin
+       # ✅ Center grid inside page
+       total_width = cols * cell_width
+       total_height = rows * cell_height
 
-        count = 0
+       x_start = (page_width - total_width) / 2
+       y_start = page_height - ((page_height - total_height) / 2)
 
-        for img in image_files:
+       count = 0
 
-            col = count % cols
-            row = (count // cols) % rows
+       for img in image_files:
 
-            x = x_start + col * cell_width
-            y = y_start - (row + 1) * cell_height
+           col = count % cols
+           row = (count // cols) % rows
 
-            c.drawImage(img, x, y,
-                        width=qr_size,
-                        height=qr_size + text_height)
+           x = x_start + col * cell_width
+           y = y_start - (row + 1) * cell_height
 
-            count += 1
+           c.drawImage(
+               img,
+               x,
+               y,
+               width=qr_size,
+               height=qr_size + text_height
+           )
 
-            if count % (cols * rows) == 0:
-                c.showPage()
+           count += 1
+
+           if count % (cols * rows) == 0:
+               c.showPage()
 
         c.save()
         return send_file(pdf_path, as_attachment=True)
