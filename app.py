@@ -123,7 +123,9 @@ def generate():
     image_files = []
 
     for eid in ids:
-        filename = os.path.join(OUTPUT_FOLDER, f"{eid}.png")
+        import re
+        safe_name = re.sub(r'[^A-Za-z0-9_-]', '_', eid)
+        filename = os.path.join(OUTPUT_FOLDER, f"{safe_name}.png")
         create_qr_with_text(eid, width, height, filename)
         image_files.append(filename)
 
