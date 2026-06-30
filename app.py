@@ -171,44 +171,43 @@ def download():
 
         page_width, page_height = A4
 
-       margin = 20
+        margin = 20
 
-       cell_width = qr_size + margin
-       cell_height = qr_size + text_height + margin
+        cell_width = qr_size + margin
+        cell_height = qr_size + text_height + margin
 
-       cols = max(1, int(page_width // cell_width))
-       rows = max(1, int(page_height // cell_height))
+        cols = max(1, int(page_width // cell_width))
+        rows = max(1, int(page_height // cell_height))
 
-       # ✅ Center grid inside page
-       total_width = cols * cell_width
-       total_height = rows * cell_height
+        # ✅ Center grid inside page
+        total_width = cols * cell_width
+        total_height = rows * cell_height
 
-       x_start = (page_width - total_width) / 2
-       y_start = page_height - ((page_height - total_height) / 2)
+        x_start = (page_width - total_width) / 2
+        y_start = page_height - ((page_height - total_height) / 2)
 
-       count = 0
+        count = 0
 
-       for img in image_files:
+        for img in image_files:
 
-           col = count % cols
-           row = (count // cols) % rows
+            col = count % cols
+            row = (count // cols) % rows
 
-           x = x_start + col * cell_width
-           y = y_start - (row + 1) * cell_height
+            x = x_start + col * cell_width
+            y = y_start - (row + 1) * cell_height
 
-           c.drawImage(
-               img,
-               x,
-               y,
-               width=qr_size,
-               height=qr_size + text_height
-           )
+            c.drawImage(
+                img,
+                x,
+                y,
+                width=qr_size,
+                height=qr_size + text_height
+            )
 
-           count += 1
+            count += 1
 
-           if count % (cols * rows) == 0:
-               c.showPage()
-
+            if count % (cols * rows) == 0:
+                c.showPage()
         c.save()
         return send_file(pdf_path, as_attachment=True)
 
