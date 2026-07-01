@@ -155,8 +155,14 @@ def download():
         if f.endswith(".png")
     ])
 
-    # ZIP
+    # ZIP / SINGLE PNG
     if output_type == "zip":
+
+        # ✅ If only one QR → send PNG directly
+        if len(image_files) == 1:
+            return send_file(image_files[0], as_attachment=True)
+
+        # ✅ Multiple → ZIP
         zip_path = os.path.join(OUTPUT_FOLDER_LOCAL, "qr_codes.zip")
 
         with zipfile.ZipFile(zip_path, "w") as zipf:
@@ -164,7 +170,7 @@ def download():
                 zipf.write(img, os.path.basename(img))
 
         return send_file(zip_path, as_attachment=True)
-
+    
     # PDF
     elif output_type == "pdf":
 
